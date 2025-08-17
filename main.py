@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from imblearn.over_sampling import SMOTE
 from sklearn.compose import ColumnTransformer
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 def perceptron_train(X, y, T):
     theta = np.zeros(X.shape[1]); theta_zero = 0
@@ -37,15 +38,22 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.30, random_state=42, stratify=(y==1)
 )
 
-# 4) Train
-T = 40
-theta, theta_zero = perceptron_train(X_train, y_train, T)
+# 4) Apply SMOTE to training data only
+smote = SMOTE(random_state=42)
+X_train_res, y_train_res = smote.fit_resample(X_train, y_train)
 
-# 5) Evaluate
+print("Before SMOTE:", np.bincount(y_train + 1))
+print("After SMOTE:", np.bincount(y_train_res + 1))
+
+# 5) Train perceptron
+T = 200
+theta, theta_zero = perceptron_train(X_train_res, y_train_res, T)
+
+# 6) Predict + Evaluate
 y_pred = perceptron_predict(X_test, theta, theta_zero)
 print(classification_report(y_test, y_pred, target_names=["Legit (-1)", "Fraud (+1)"]))
 
-# 6) Inference helper
+# 7) Inference helper
 def flag_transaction(tx_dict, preprocessor, theta, theta_zero):
     tx_df = pd.DataFrame([tx_dict])
     X_tx = preprocessor.transform(tx_df).toarray()
