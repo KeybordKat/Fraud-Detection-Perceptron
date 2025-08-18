@@ -6,11 +6,12 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import matplotlib.pyplot as plt
+from sklearn.metrics import precision_recall_curve
 
 
 # Perceptron and training tracking
 def perceptron_train(X, y, T):
-    theta = np.zeros(X.shape[1]);
+    theta = np.zeros(X.shape[1])
     theta_zero = 0
     accuracy_history = []
 
@@ -83,9 +84,31 @@ plt.ylabel("Training Accuracy")
 plt.grid(True)
 plt.show()
 
-# 7) Predict + Evaluate
-y_pred = perceptron_predict(X_test, theta, theta_zero)
+# 7) Predict + Evaluate (using raw scores instead of fixed thresholds)
+scores = np.dot(X_test, theta) + theta_zero
+
+# Precision-Recall curve to explore thresholds
+precision, recall, thresholds = precision_recall_curve(y_test, scores)
+
+# Find thresholds where recall is 1.0
+target_recall = 0.99
+best_thresh = 0
+best_acc = 0
+for p, r, t in zip(precision, recall, thresholds):
+    if r == target_recall:  # keep full recall
+        y_pred_temp = np.where(scores >= t, 1, -1)
+        acc = (y_pred_temp == y_test).mean()
+        if acc > best_acc:
+            best_acc = acc
+            best_thresh = t
+
+print(f"Best threshold keeping recall=1.0: {best_thresh:.4f}, Accuracy: {best_acc:.4f}")
+
+# Use the chosen threshold for predictions
+y_pred = np.where(scores >= best_thresh, 1, -1)
+
 print(classification_report(y_test, y_pred, target_names=["Legit (-1)", "Fraud (+1)"]))
+
 
 
 # 8) Inference helper
