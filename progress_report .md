@@ -25,10 +25,10 @@ To fix this issue, I decided to start off by resampling; I used SMOTE as suggest
 Because perceptrons are simple and do not handle noisy boundaries well, the perceptrons accuracy was horrendous. The recall was much better, which was great because recall is actually much more important than precision when it comes to identifying fraudulent transactions since marking legit transactions as fraud is much less costly than not identifying actual fraudulent transactions. To increase accuracy and precision without sacrificing recall, I decided to do some feature engineering.
 
 Before feature engineering:  
-<img src="images/graph_1.png" width="900">
+![Graph](images/graph_1.png)
 
 After feature engineering:  
-<img src="images/graph_2.png" width="900">
+![Graph](images/graph_2.png)
 
 The features I calculated from raw data were:  changes in recipients and senders bank accounts, and amount compared to balance before and after the transaction. These features would much more accurately show whether a transaction might be fraudulent over raw data.
 
@@ -43,6 +43,6 @@ New performance:
 | Weighted average | 1.00 | 0.92 | 0.96 | 60000 |
 
 In order to lessen the number of legit transactions that are marked as fraud, my next step was to adjust my decision threshold to raise accuracy hopefully without losing recall. Instead of using a hard boundary, I swapped to calculating a precision-recall curve with a goal recall of 0.9, and made my perceptron cost-sensitive to reduce the number of false alarms.
-<img src="images/graph_3.png" width="900">
+![Graph](images/graph_3.png)
 This allowed for my perceptron's performance to stabilise much better between epochs 30 and 40\. I achieved this by calculating a dynamic decision-threshold using my precision-recall curve.
 
