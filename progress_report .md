@@ -46,3 +46,5 @@ In order to lessen the number of legit transactions that are marked as fraud, my
 ![Graph](images/graph_3.png)
 This allowed for my perceptron's performance to stabilise much better between epochs 30 and 40\. I achieved this by calculating a dynamic decision-threshold using my precision-recall curve.
 
+the next step I took was not necessarily one to improve my model itself, but rather to improve my general tech stack. I decided to swap to using Jupyter notebook for better documentation and visualisation.
+
